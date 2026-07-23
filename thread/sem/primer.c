@@ -5,6 +5,7 @@
 #include <time.h>
 #include "sem.h"
 
+// 三种方法 + 1种， 分块发，交叉分配法，池内； + 同一时刻不允许太多个线程
 #define LEFT    30000000
 #define RIGHT   30000200
 #define THRNUM  4

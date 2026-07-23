@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+// 要加上-fopenmp
 int main(void)
 {
 #pragma omp parallel
@@ -7,5 +7,6 @@ int main(void)
     puts("hello");
     puts("world");
 }
+
     return 0;
 }

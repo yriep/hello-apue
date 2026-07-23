@@ -7,7 +7,12 @@
 #include <time.h>
 #include <unistd.h>
 #include "mytbf.h"
+/*
 
+ * 优化：使用setitimer和sigaction
+ * 1. setitimer优势：周期性调用，时间灵活
+ * 2. sigaction优势区分信号来源，防止user使用kill发送sigalrm信号导致token快速积累。
+ **/
 struct tbf_st
 {
     int cps;

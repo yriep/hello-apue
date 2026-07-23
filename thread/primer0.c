@@ -34,6 +34,13 @@ int main(void)
 
     for (int i = LEFT; i <= RIGHT; i++) {
         p[i-LEFT] = i;
+        // 如果参数直接传i地址，会有竞争出现。
+        // 传递的是i的地址，每次循环i值改变，那么线程循环判断时，判断的就是改变后的i
+        /*
+         * 解决方法 
+         * 1. 直接将i强转成指针 (void *)i; 会有警告
+         * 2. 捏造一个结构体 primer0e.c
+        */
         err = pthread_create(tid+i-LEFT, NULL, thr_prime, (void *)(p+i-LEFT));
         if (err) {
             fprintf(stderr, "pthread_create fail: %s\n", strerror(err));

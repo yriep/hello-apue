@@ -24,6 +24,7 @@ static void *thr_prime(void *p)
         while (num == 0) {
             pthread_mutex_unlock(&mut);
             sched_yield();
+            //sched针对调度器的操作，这个是出让调度器给别的线程。
             pthread_mutex_lock(&mut);
         }
         if (num == -1) {

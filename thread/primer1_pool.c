@@ -8,8 +8,10 @@
 #define RIGHT   30000200
 #define THRNUM  4
 /*查询法 的任务池
- *
+ * 
  * main线程把人物放入内存中，由其余线程去争夺：争夺方法：抢锁
+ * 
+ * 优化：使得不会忙等抢锁。
  * */
 static pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
@@ -80,7 +82,7 @@ int main(void)
     num = -1;
     pthread_cond_broadcast(&cond);
     pthread_mutex_unlock(&mut);
-
+    printf("111\n");
     for (int i = 0; i < THRNUM; i++) {
         pthread_join(tid[i], NULL);
     }

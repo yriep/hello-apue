@@ -4,6 +4,8 @@
 
 #define TRDNUM      4
 
+// 互斥锁的锁链是未定义的
+
 static pthread_mutex_t mut[TRDNUM];
 
 static int next(int i)

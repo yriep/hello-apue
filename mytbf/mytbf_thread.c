@@ -37,17 +37,21 @@ struct tbf_st
     pthread_mutex_t mut;
     pthread_cond_t cond;
 };
-static int inited = 0;
+
+static pthread_t tid;
 static struct tbf_st * jobs[MAXSIZE_TBF];
 static pthread_mutex_t mut_job = PTHREAD_MUTEX_INITIALIZER;
 static pthread_once_t one = PTHREAD_ONCE_INIT;
 
 static void module_unload(void)
 {
+    pthread_cancel(tid);
+    pthread_join(tid, NULL);
     for (int i = 0; i< MAXSIZE_TBF; i++) {
         if (jobs[i] == NULL) {
             continue;
         }
+        // tbf_destroy()
         pthread_mutex_destroy(&(jobs[i]->mut));
         pthread_cond_destroy(&(jobs[i]->cond));
         free(jobs[i]);
@@ -57,7 +61,7 @@ static void module_unload(void)
     pthread_mutex_destroy(&mut_job);
 }
 
-static void *token_com_start(void *p)
+static void *token_comp_start(void *p)
 {
     while (1) {
         pthread_mutex_lock(&mut_job);
@@ -80,16 +84,17 @@ static void *token_com_start(void *p)
 static void module_load(void)
 {
     int err;
-    pthread_t tid;
 
-    err = pthread_create(&tid, NULL, token_com_start, NULL);
+    err = pthread_create(&tid, NULL, token_comp_start, NULL);
     if (err) {
         fprintf(stderr, "pthread_create: %s\n", strerror(err));
         exit(EXIT_FAILURE);
     }
     atexit(module_unload);
 }
-static int get_free_pos(void)
+
+//函数名体现unlock，防止误调用
+static int get_free_pos_unlock(void)
 {
     int i;
     for (i = 0; i < MAXSIZE_TBF; i++) {
@@ -113,7 +118,7 @@ int mytbf_init(int cps, int burst)
     pthread_cond_init(&tbf->cond, NULL);
 
     pthread_mutex_lock(&mut_job);
-    index = get_free_pos();
+    index = get_free_pos_unlock();
     if (index < 0)
         return -ENOSPC;
     jobs[index] = tbf;

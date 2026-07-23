@@ -36,7 +36,10 @@ int main(int argc, char *argv[])
     it.it_interval.tv_usec = 0;
     it.it_value.tv_sec = 1;
     it.it_value.tv_usec = 0;
-    setitimer(ITIMER_REAL, &it, NULL);
+    if (setitimer(ITIMER_REAL, &it, NULL) < 0) {
+        perror("setitimer()");
+        exit(EXIT_FAILURE);
+    }
 
     while ((fd = open(argv[1], O_RDONLY)) < 0) {
         if (errno != EINTR) {

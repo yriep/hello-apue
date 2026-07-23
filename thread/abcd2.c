@@ -16,6 +16,7 @@ static int next(int n)
         n = 0;
     return n;
 }
+
 static void *tr_func(void *p)
 {
     int i = (int)p;

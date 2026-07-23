@@ -6,7 +6,8 @@
 static void *func(void *arg)
 {
     printf("thread start succ!\n");
-    return NULL;
+    // return NULL;
+    pthread_exit(NULL);
 }
 int main(void)
 {
@@ -20,6 +21,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    pthread_join(tid, NULL);
     puts("End!");
     return 0;
 }

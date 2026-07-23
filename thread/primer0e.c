@@ -5,7 +5,7 @@
 
 #define LEFT    30000000
 #define RIGHT   30000200
-#define THRNUM  RIGHT - LEFT + 1
+#define THRNUM  (RIGHT - LEFT + 1)
 
 struct st_store
 {
@@ -49,6 +49,7 @@ int main(void)
 
     for (int i = LEFT; i <= RIGHT; i++) {
         pthread_join(tid[i-LEFT], &ptr);
+        // 最好在一个模块或函数 malloc和free
         free(ptr);
     }
     return 0;
