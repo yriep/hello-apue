@@ -15,6 +15,8 @@ static void *func(void *p)
     pthread_cleanup_push(clean, "cleanup: 3");
     pthread_cleanup_pop(1);                     //手动清理
     pthread_cleanup_pop(0);                     // 不执行
+
+    printf("exit stop\n");
     pthread_exit(NULL);
     pthread_cleanup_pop(0);                     //exit时自动实现线程清理
 }
