@@ -22,12 +22,14 @@ static void add_func(int fd)
 
     lockf(fd, F_LOCK, 0);
 
+//    fseek(fp, 0, SEEK_SET);     //多进程的文件描述符都是由fork复制而来，指向的都是同一个结构体，偏移量也会共用。
     fgets(num_s, 32 - 1, fp);
-    fseek(fp, 0, SEEK_SET);
-    fprintf(fp, "%d\n", atoi(num_s) + 1);
-    fflush(fp);
-    fseek(fp, 0, SEEK_SET);     //多进程的文件描述符都是由fork复制而来，指向的都是同一个结构体，偏移量也会共用。
 
+    fseek(fp, 0, SEEK_SET);
+    fprintf(fp, "%d", atoi(num_s) + 1);
+    fflush(fp);
+
+    fseek(fp, 0, SEEK_SET);     //多进程的文件描述符都是由fork复制而来，指向的都是同一个结构体，偏移量也会共用。
     //如果是子进程单独打开文件时，就是每个文件描述符指向不同的结构体了。
     lockf(fd, F_ULOCK, 0);
 
@@ -37,6 +39,7 @@ int main(void)
 {
     int i = 0;
     int fd;
+    char num[32];
     pid_t pid;
 
     fd = open(FNAME, O_RDWR);
@@ -60,6 +63,9 @@ int main(void)
     for (i = 0; i < 20; i++) {
         wait(NULL);
     }
+//    lseek(fd, 0, SEEK_SET);
+    read(fd, num, 31);
+    puts(num);
     close(fd);
     return 0;
 }
