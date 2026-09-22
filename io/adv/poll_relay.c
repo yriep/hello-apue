@@ -120,9 +120,9 @@ static void relay(int fd1, int fd2)
             exit(EXIT_FAILURE);
         }
 
-        if (pofds[0].revents & POLLIN || pofds[0].revents & POLLOUT || stat12.status > STAT_AUTO)
+        if (pofds[0].revents & POLLIN || pofds[1].revents & POLLOUT || stat12.status > STAT_AUTO)
             state_drive(&stat12);
-        if (pofds[1].revents & POLLIN || pofds[1].revents & POLLOUT || stat21.status > STAT_AUTO)
+        if (pofds[0].revents & POLLOUT || pofds[1].revents & POLLIN || stat21.status > STAT_AUTO)
             state_drive(&stat21);
     }
     fcntl(fd1, F_SETFL, save_fd1);

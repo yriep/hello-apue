@@ -84,7 +84,7 @@ static void relay(int fd1, int fd2)
 {
     int save_fd1, save_fd2;
     STAT_ST stat12, stat21;
-    struct epoll_event event, *events;
+    struct epoll_event event;
     int epfd;
 
     save_fd1 = fcntl(fd1, F_GETFL);
@@ -114,7 +114,6 @@ static void relay(int fd1, int fd2)
     }
 
     memset(&event, 0, sizeof(struct epoll_event));
-    events = malloc(sizeof(struct epoll_event) * 2);
     event.data.fd = fd1;
     event.events = EPOLLIN | EPOLLOUT;
     epoll_ctl(epfd, EPOLL_CTL_ADD, fd1, &event);
@@ -137,7 +136,7 @@ static void relay(int fd1, int fd2)
         ....
          * */
         if (stat12.status < STAT_AUTO || stat21.status < STAT_AUTO) {
-            while (epoll_wait(epfd, events, 2, -1) < 0) {
+            while (epoll_wait(epfd, &event, 1, -1) < 0) {
                 if (errno == EINTR)
                     continue;
                 perror("epoll_wait()");
@@ -145,12 +144,12 @@ static void relay(int fd1, int fd2)
             }
         }
 
-        if ((events[0].data.fd == fd1 && events[0].events & EPOLLIN)
-                || (events[0].data.fd == fd2 && events[0].events & EPOLLOUT)
+        if ((event.data.fd == fd1 && event.events & EPOLLIN)
+                || (event.data.fd == fd2 && event.events & EPOLLOUT)
                 || stat12.status > STAT_AUTO)
             state_drive(&stat12);
-        if ((events[1].data.fd == fd2 && events[1].events & EPOLLIN)
-                || (events[1].data.fd == fd1 && events[1].events & EPOLLOUT)
+        if ((event.data.fd == fd2 && event.events & EPOLLIN)
+                || (event.data.fd == fd1 && event.events & EPOLLOUT)
                 || stat12.status > STAT_AUTO)
             state_drive(&stat21);
     }

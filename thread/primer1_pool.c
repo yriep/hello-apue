@@ -100,11 +100,9 @@ int main(void)
     while (num != 0) {
         pthread_cond_wait(&cond, &mut);
     }
-    pthread_mutex_unlock(&mut);
+    // pthread_mutex_unlock(&mut);     // 注释后就无法结束。
     num = -1;
     pthread_cond_broadcast(&cond);
-
-    // pthread_mutex_unlock(&mut);
 
     for (int i = 0; i < THRNUM; i++)
     {
